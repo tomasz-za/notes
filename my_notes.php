@@ -6,6 +6,7 @@ $signed_in = false;
 require_once "includes/connect.php";
 
 include 'sign.php';
+//include 'includes/classes/notes.php';
 
 mysqli_report(MYSQLI_REPORT_STRICT);
 try {
@@ -25,10 +26,11 @@ try {
 
 if (!isset($_SESSION['lang'])){
     $_SESSION['lang']='en';
-} elseif ($_GET['lang'] && $_SESSION['lang'] != $_GET['lang']){
+} elseif (isset($_GET['lang']) && $_SESSION['lang'] != $_GET['lang']){
     $_SESSION['lang'] = $_GET['lang'];
 }
 require_once "includes/languages/".$_SESSION['lang'].".php";
+include 'includes/classes/notes.php';
 ?>
 
 <!DOCTYPE html>
@@ -63,7 +65,7 @@ require_once "includes/languages/".$_SESSION['lang'].".php";
                 echo '
             <ul class="navbar-nav">
                 <li class="nav-item active" >
-                    <a href="my_notes.php" class="nav-link">my notes</a>
+                    <a href="" class="nav-link">my notes</a>
                 </li>
                 <li class="nav-item active" >
                     <a href="" class="nav-link">calendar</a>
@@ -89,24 +91,18 @@ require_once "includes/languages/".$_SESSION['lang'].".php";
 
 <div class="container" style="margin-top: 200px">
 
-    <h1>Notes</h1>
+    <h1>My Lists</h1>
     <h3><?php print_r($_SESSION)?></h3>
+    <div class="justify-content-end"><a href='add_list.php'>create new note</a></div>
     <?php
-    if ($connection_status){
-        echo $lang['connected']."\n";
-        if (isset($_SESSION['username'])){echo $_SESSION['username'];} else { echo "username error";}
-
+    if (notes::get_number_of_my_notes('TomeK4') > 0){
+        notes::print_my_lists();
+    } else {
+        echo "looks like you dont have anny lists <br> create a new one <br>";
+        echo "<a href='add_list.php'>create new note</a>";
     }
     ?>
-
-    <a href='index.php'><i class='bi bi-circle low'></i></a> <br>
-    <i class="bi bi-circle low"></i><br>
-    <i class="bi bi-circle mid"></i><br>
-    <i class="bi bi-circle high"></i>
-
 </div>
-
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
 </body>
 </html>

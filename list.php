@@ -29,6 +29,16 @@ if (!isset($_SESSION['lang'])){
     $_SESSION['lang'] = $_GET['lang'];
 }
 require_once "includes/languages/".$_SESSION['lang'].".php";
+
+// GET
+ if (!isset($_GET['id'])){
+     header('Location:index.php');
+     } else {
+     $_SESSION['list_id'] = $_GET['id'];
+ }
+
+ include 'includes/classes/notes.php';
+
 ?>
 
 <!DOCTYPE html>
@@ -89,24 +99,27 @@ require_once "includes/languages/".$_SESSION['lang'].".php";
 
 <div class="container" style="margin-top: 200px">
 
-    <h1>Notes</h1>
-    <h3><?php print_r($_SESSION)?></h3>
+    <h1><?php echo (notes::get_list_title($_GET['id'])) ?></h1> <br>
+
+    <div class='d-flex flex-row'>
+        <div class='p-2'>
+            <a href="add_note.php"><i  class="bi bi-plus-circle-fill"></i> Add note </a>
+        </div>
+    </div>
+
+
     <?php
-    if ($connection_status){
-        echo $lang['connected']."\n";
-        if (isset($_SESSION['username'])){echo $_SESSION['username'];} else { echo "username error";}
 
+    //echo notes::get_number_of_my_notes_in_list($_GET['id']);
+
+    if (notes::get_number_of_my_notes_in_list($_GET['id']) > 0){
+        notes::print_my_notes($_GET['id']);
+    } else {
+        echo "looks like you dont have notes";
     }
+
     ?>
-
-    <a href='index.php'><i class='bi bi-circle low'></i></a> <br>
-    <i class="bi bi-circle low"></i><br>
-    <i class="bi bi-circle mid"></i><br>
-    <i class="bi bi-circle high"></i>
-
 </div>
-
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
 </body>
 </html>

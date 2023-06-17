@@ -1,11 +1,15 @@
 <?php
 session_start();
-
-$signed_in = false;
+/**
+if (!isset($_SESSION['signed_in'])){
+header('Location:sign_in.php');
+}
+ **/
 //CHECK IF CONNECTION CAN BE MAKE
 require_once "includes/connect.php";
 
 include 'sign.php';
+include 'includes/classes/notes.php';
 
 mysqli_report(MYSQLI_REPORT_STRICT);
 try {
@@ -28,6 +32,14 @@ if (!isset($_SESSION['lang'])){
 } elseif ($_GET['lang'] && $_SESSION['lang'] != $_GET['lang']){
     $_SESSION['lang'] = $_GET['lang'];
 }
+
+if (isset($_GET['id'])){
+    $list_id = $_GET['id'];
+    $_SESSION['list_id'] = $list_id;
+}
+
+$title = notes::get_list_title($list_id);
+$description = notes::get_list_description($list_id);
 require_once "includes/languages/".$_SESSION['lang'].".php";
 ?>
 
@@ -63,7 +75,7 @@ require_once "includes/languages/".$_SESSION['lang'].".php";
                 echo '
             <ul class="navbar-nav">
                 <li class="nav-item active" >
-                    <a href="my_notes.php" class="nav-link">my notes</a>
+                    <a href="" class="nav-link">my notes</a>
                 </li>
                 <li class="nav-item active" >
                     <a href="" class="nav-link">calendar</a>
@@ -89,24 +101,31 @@ require_once "includes/languages/".$_SESSION['lang'].".php";
 
 <div class="container" style="margin-top: 200px">
 
-    <h1>Notes</h1>
+    <h1>Edit list</h1>
     <h3><?php print_r($_SESSION)?></h3>
-    <?php
-    if ($connection_status){
-        echo $lang['connected']."\n";
-        if (isset($_SESSION['username'])){echo $_SESSION['username'];} else { echo "username error";}
+    <form action="menage_lists.php" method="post">
+        <h2>add new list</h2> <br>
+        <h3><?php if (isset($_SESSION['error'])) {echo $_SESSION['error'];};?></h3>
+        <p>list title</p>
+        <input type="text" name="title" value="<?php echo $title;?>"> <br>
+        <br>
+        <p>list description</p>
+        <input type="text" name="description" value="<?php echo $description;?>"> <br>
+        <br>
+        <button type="submit" name="submit" value="edit_list">edit</button> <br><br>
+    </form>
+    <p>users in project : </p>
 
-    }
-    ?>
+    <?php notes::print_list_users($list_id); ?>
 
-    <a href='index.php'><i class='bi bi-circle low'></i></a> <br>
-    <i class="bi bi-circle low"></i><br>
-    <i class="bi bi-circle mid"></i><br>
-    <i class="bi bi-circle high"></i>
+    <form action="menage_lists.php" method="post">
+        <p>add user</p> <br>
+        <input type="text" name="username" value=""> <br> <br>
+        <button type="submit" name="submit" value="add_username">add_username</button>
+    </form>
+
 
 </div>
-
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
 </body>
 </html>
