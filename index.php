@@ -59,7 +59,10 @@ require_once "includes/languages/".$_SESSION['lang'].".php";
         </button>
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
             <?php
-            if (isset($_SESSION['signed_in'])){
+
+
+
+            if (isset($_SESSION['signed_in']) and $_SESSION['user_type'] == 'user'){
                 echo '
             <ul class="navbar-nav">
                 <li class="nav-item active" >
@@ -70,6 +73,23 @@ require_once "includes/languages/".$_SESSION['lang'].".php";
                 </li>
                 <li class="nav-item active" >
                     <a href="" class="nav-link">notifications</a>
+                </li>
+            </ul>';
+
+            } elseif (isset($_SESSION['user_type']) and $_SESSION['user_type'] == 'admin'){
+                echo '
+            <ul class="navbar-nav">
+                <li class="nav-item active" >
+                    <a href="my_notes.php" class="nav-link">my notes</a>
+                </li>
+                <li class="nav-item active" >
+                    <a href="" class="nav-link">calendar</a>
+                </li>
+                <li class="nav-item active" >
+                    <a href="" class="nav-link">notifications</a>
+                </li>
+                <li class="nav-item active" >
+                    <a href="" class="nav-link">admin panel</a>
                 </li>
             </ul>';
             }

@@ -2,6 +2,32 @@
 //session_start();
 class notes {
 
+    static function push_data_from_file($path, $list_id){
+        include 'includes/connect.php';
+        $file = fopen($path,'r');
+
+        $zawartosc = '';
+
+// przypisanie zawartości do zmiennej
+        while(!feof($file))
+        {
+            $line = fgets($file);
+            $line_explode = explode(',',$line);
+
+            if (isset($line_explode[1])){
+                print_r($line_explode);
+                $title = $line_explode[0];
+                $description = $line_explode[1];
+                $priority = $line_explode[2];
+                $date = $line_explode[3];
+            }
+
+
+
+            self::add_note($list_id,$title,$description,$priority,$date);
+        }
+    }
+
     static function get_my_lists()
     {
         include 'includes/connect.php';
@@ -317,7 +343,10 @@ class notes {
         include 'includes/connect.php';
         $result = $connection->query("SELECT description FROM tasks where id='$id'");
         $row = mysqli_fetch_array($result);
-        return $row['description'];
+
+        if (isset($row['description'])){
+            return $row['description'];
+        }
     }
 
     static function get_task_priority($id){
@@ -334,7 +363,10 @@ class notes {
         include 'includes/connect.php';
         $result = $connection->query("SELECT execution_date FROM tasks where id='$id'");
         $row = mysqli_fetch_array($result);
-        return $row['execution_date'];
+
+        if (isset($row['execution_date'])){
+            return $row['execution_date'];
+        }
     }
 
     static function get_task_status($id){
@@ -395,6 +427,24 @@ class notes {
                          </div>
                    </div>";
             //echo "<a href='task.php?id=$id'>".self::get_task_title($id).",".self::get_task_execution_date($id)."</a><br>";
+        }
+    }
+
+    static function print_my_notes_to_file($list_id){
+
+        // include 'includes/connect.php';
+        $task_id = self::get_my_notes($list_id);
+        foreach ($task_id as $id) {
+            $title = self::get_task_title($id);
+            $description = self::get_task_description($id);
+            $date = self::get_task_execution_date($id);
+            $status = self::get_task_status($id);
+            $priority = self::get_task_priority($id);
+            if (isset($title)){
+                file_put_contents('files/file.txt', $id.",".$title.",".$description.",".$priority.",".$date.",".$status."\n", FILE_APPEND | LOCK_EX);
+
+            }
+
         }
     }
 

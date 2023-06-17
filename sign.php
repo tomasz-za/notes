@@ -50,6 +50,7 @@ class sign_in {
                         $_SESSION['id'] = $row['username'];
                         $_SESSION['username'] = $row['username'];
                         $_SESSION['email'] = $row['email'];
+                        $_SESSION['user_type'] = $row['user_type'];
 
                         unset($_SESSION['error']);
                         //echo $username;
