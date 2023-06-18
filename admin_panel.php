@@ -4,6 +4,7 @@ session_start();
 $signed_in = false;
 //CHECK IF CONNECTION CAN BE MAKE
 require_once "includes/connect.php";
+include 'includes/classes/notes.php';
 
 include 'sign.php';
 
@@ -20,6 +21,11 @@ try {
     echo 'Cannot connect to the server';
     //echo 'Exeption : '.$e->getCode().'comunicate : '.$e->getMessage();
 }
+
+if (isset($_SESSION['user_type']) and $_SESSION['user_type'] == 'user'){
+    header('Location:index.php');
+}
+
 
 // SETTING LANGUAGE
 
@@ -89,7 +95,7 @@ require_once "includes/languages/".$_SESSION['lang'].".php";
                     <a href="" class="nav-link">notifications</a>
                 </li>
                 <li class="nav-item active" >
-                    <a href="admin_panel.php" class="nav-link">admin panel</a>
+                    <a href="" class="nav-link">admin panel</a>
                 </li>
             </ul>';
             }
@@ -109,7 +115,7 @@ require_once "includes/languages/".$_SESSION['lang'].".php";
 
 <div class="container" style="margin-top: 200px">
 
-    <h1>Notes</h1>
+    <h1>Admin panel</h1>
     <h3><?php print_r($_SESSION)?></h3>
     <?php
     if ($connection_status){
@@ -118,11 +124,8 @@ require_once "includes/languages/".$_SESSION['lang'].".php";
 
     }
     ?>
-
-    <a href='index.php'><i class='bi bi-circle low'></i></a> <br>
-    <i class="bi bi-circle low"></i><br>
-    <i class="bi bi-circle mid"></i><br>
-    <i class="bi bi-circle high"></i>
+    <h2>users Lists</h2>
+    <?php notes::print_all_lists();?>
 
 </div>
 

@@ -35,6 +35,7 @@ require_once "includes/languages/".$_SESSION['lang'].".php";
      header('Location:index.php');
      } else {
      $_SESSION['list_id'] = $_GET['id'];
+     $user_type = $_SESSION['user_type'];
  }
 
  include 'includes/classes/notes.php';
@@ -116,7 +117,9 @@ require_once "includes/languages/".$_SESSION['lang'].".php";
 
     //echo notes::get_number_of_my_notes_in_list($_GET['id']);
 
-    if (notes::get_number_of_my_notes_in_list($_GET['id']) > 0){
+    if ($user_type == 'admin'){
+        notes::print_all_notes($_GET['id']);
+    } elseif ($user_type == 'user' and notes::get_number_of_my_notes_in_list($_GET['id']) > 0){
         notes::print_my_notes($_GET['id']);
     } else {
         echo "looks like you dont have notes";

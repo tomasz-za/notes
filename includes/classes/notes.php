@@ -52,6 +52,110 @@ class notes {
         return $list_id;
     }
 
+//ADMIN
+    static function get_all_lists()
+    {
+        include 'includes/connect.php';
+        //$username = $_SESSION['username'];
+
+        $result = $connection->query("SELECT list_id FROM connections;");
+
+        $list_id_assoc = array();
+        while ($row = mysqli_fetch_assoc($result)) {
+            $list_id_assoc[] = $row;
+        }
+
+        $data_size = count($list_id_assoc);
+        $list_id_duplicate = array();
+
+        for ($i = 0; $i < $data_size; $i++) {
+            array_push($list_id_duplicate, $list_id_assoc[$i]['list_id']);
+        }
+        $list_id = array_unique($list_id_duplicate);
+
+        return $list_id;
+    }
+
+    static function print_all_lists()
+    {
+        // include 'includes/connect.php';
+        $list_id = self::get_all_lists();
+        foreach ($list_id as $id) {
+            //$result = $connection->query("SELECT title FROM lists where id='$id'");
+            //$row = mysqli_fetch_array($result);
+            //echo "<a href='list.php?id=$id'>".$row['title']."</a><br>";
+            echo "<a href='list.php?id=$id'>".self::get_list_title($id)."</a><a href='edit_list.php?id=$id'><i class='bi bi-pencil-fill'></i></a><a href='delete_list.php?id=$id'><i class='bi bi-trash3-fill'></i></a><br>";
+        }
+    }
+
+    static function get_all_notes($list_id){
+        include 'includes/connect.php';
+        //$username = $_SESSION['username'];
+
+        $result = $connection->query("SELECT task_id FROM connections WHERE list_id='$list_id';");
+
+
+        $task_id_assoc = array();
+        while ($row = mysqli_fetch_assoc($result)) {
+            $task_id_assoc[] = $row;
+        }
+
+        $data_size = count($task_id_assoc);
+        $list_id_duplicate = array();
+
+        for ($i = 0; $i < $data_size; $i++) {
+            array_push($list_id_duplicate, $task_id_assoc[$i]['task_id']);
+        }
+        $list_id = array_unique($list_id_duplicate);
+
+        return $list_id;
+    }
+
+    static function print_all_notes($list_id){
+        // include 'includes/connect.php';
+        $task_id = self::get_all_notes($list_id);
+        foreach ($task_id as $id) {
+            //$result = $connection->query("SELECT title FROM lists where id='$id'");
+            //$row = mysqli_fetch_array($result);
+            //echo "<a href='list.php?id=$id'>".$row['title']."</a><br>";
+            echo "<div class='d-flex flex-column'>
+                    <div class='d-flex flex-row'>
+                        <div class='p-2'>".
+                self::button_status(self::get_task_status($id),self::get_task_priority($id),$id).
+                "</div>
+                         <div class='p-2'>
+                                <h5> <a class='btn btn-link' data-bs-toggle='collapse' href='#collapse".$id."' role='button' aria-expanded='false' aria-controls='collapse".$id."'>".self::get_task_title($id)."</a>
+                                    <div class='collapse' id='collapse".$id."'>
+                                        
+                                         ".self::get_task_description($id)." <br><hr>
+                                         <p> priority : ".self::get_task_priority($id)."| date : ". self::get_task_execution_date($id)."</p><hr><a href='edit_note.php?id=$id'><i class='bi bi-pencil-fill'></i></a><a href='delete_note.php?id=$id'><i class='bi bi-trash3-fill'></i></a>
+                                    
+                                </h5>
+                         </div>
+                   </div>";
+            //echo "<a href='task.php?id=$id'>".self::get_task_title($id).",".self::get_task_execution_date($id)."</a><br>";
+        }
+    }
+
+    static function print_all_notes_to_file($list_id){
+
+        // include 'includes/connect.php';
+        $task_id = self::get_all_notes($list_id);
+        foreach ($task_id as $id) {
+            $title = self::get_task_title($id);
+            $description = self::get_task_description($id);
+            $date = self::get_task_execution_date($id);
+            $status = self::get_task_status($id);
+            $priority = self::get_task_priority($id);
+            if (isset($title)){
+                file_put_contents('files/file.txt', $id.",".$title.",".$description.",".$priority.",".$date.",".$status."\n", FILE_APPEND | LOCK_EX);
+
+            }
+
+        }
+    }
+
+
     static function get_list_users($list_id)
     {
         include 'includes/connect.php';
